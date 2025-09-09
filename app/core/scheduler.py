@@ -1,4 +1,3 @@
-# app/core/scheduler.py
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
@@ -12,7 +11,6 @@ _scheduler: AsyncIOScheduler | None = None
 
 def _on_job_event(event):
     job_id = getattr(event, "job_id", "?")
-    # Replace prints with structured logs if needed
     print(f"[APScheduler] event={event.code} job={job_id}")
 
 def start_scheduler() -> AsyncIOScheduler:
@@ -20,7 +18,6 @@ def start_scheduler() -> AsyncIOScheduler:
     if _scheduler:
         return _scheduler
 
-    # Optional: persist jobs so schedules survive restarts
     jobstores = {"default": SQLAlchemyJobStore(url=str(settings.archive_database_url))}
     executors = {"default": ThreadPoolExecutor(max_workers=4)}
     job_defaults = {

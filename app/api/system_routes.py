@@ -1,4 +1,3 @@
-# app/api/system_routes.py
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from app.core.scheduler import get_job_summaries, get_scheduler, test_job_callable

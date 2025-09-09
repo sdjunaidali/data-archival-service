@@ -10,7 +10,6 @@ from app.api.admin_routes import router as admin_router
 
 app = FastAPI(title="Fortinet Data Archival Service")
 
-# Ensure tables exist for dev. In production, rely on Alembic migrations.
 Base.metadata.create_all(bind=source_engine)
 Base.metadata.create_all(bind=archive_engine)
 
