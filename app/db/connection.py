@@ -16,3 +16,8 @@ def get_source_session():
 
 def get_archive_session(): 
     return ArchiveSession()
+
+def dispose_engines():
+    # Call on application shutdown
+    source_engine.dispose()
+    archive_engine.dispose()
