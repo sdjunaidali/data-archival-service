@@ -12,7 +12,6 @@ class Settings(BaseSettings):
     secret_key: str = Field(..., alias="SECRET_KEY")
     source_database_url: PostgresDsn = Field(..., alias="SOURCE_DATABASE_URL")
     archive_database_url: PostgresDsn = Field(..., alias="ARCHIVE_DATABASE_URL")
-    celery_broker_url: str = Field(..., alias="CELERY_BROKER_URL")
     debug: bool = Field(default=False, alias="DEBUG")
 
     @classmethod

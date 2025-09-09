@@ -46,10 +46,21 @@ def archive_and_delete_job():
                 src.execute(text("DELETE FROM {t} WHERE id = ANY(:ids)".format(t=cfg.table_name)), {"ids": ids})
                 src.commit()
 
-        dst.execute(text("DELETE FROM archived_data WHERE table_name=:t AND archived_at < :delcut"),
-                    {"t": cfg.table_name, "delcut": cutoff_delete})
-        dst.commit()
     src.close(); dst.close()
+
+def purge_expired_archives():
+    dst = get_archive_session()
+    now = datetime.utcnow()
+    try:
+        for cfg in get_all_configs(as_session=True):
+            cutoff_delete = now - timedelta(days=cfg.delete_after_days)
+            dst.execute(
+                text("DELETE FROM archived_data WHERE table_name=:t AND archived_at < :delcut"),
+                {"t": cfg.table_name, "delcut": cutoff_delete},
+            )
+        dst.commit()
+    finally:
+        dst.close()
 
 def fetch_archived_data(table_name: str):
     dst = get_archive_session()

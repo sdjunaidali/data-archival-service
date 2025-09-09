@@ -1,7 +1,7 @@
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException, Depends, Path
 from datetime import datetime, timedelta
 from app.db.connection import get_source_session
 from app.models.user import User
@@ -19,12 +19,13 @@ def create_user_account(user_create):
         return False
     u = User(username=user_create.username, 
              password_hash=pwd.hash(user_create.password),
-             role=user_create.role)
+             role="user",  # enforce regular user
+    )
     db.add(u); db.commit(); db.refresh(u)
-    if user_create.role == "user" and user_create.permissions:
-        for t in user_create.permissions:
-            db.add(UserTablePermission(user_id=u.id, table_name=t))
-        db.commit()
+    #if user_create.role == "user" and user_create.permissions:
+    #    for t in user_create.permissions:
+    #        db.add(UserTablePermission(user_id=u.id, table_name=t))
+    #    db.commit()
     db.close()
     return True
 
@@ -84,3 +85,15 @@ def is_admin_or_table_access(user, table_name: str):
     if table_name in user.get("permissions", []):
         return True
     raise HTTPException(status_code=403, detail="Forbidden")
+
+def require_admin(user=Depends(get_current_active_user)):
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+def require_table_access_factory():
+    def dep(table_name: str = Path(...), user=Depends(get_current_active_user)):
+        if user.get("role") == "admin":
+            return
+        if table_name not in set(user.get("permissions", [])):
+            raise HTTPException(status_code=403, detail="Forbidden")
+    return dep

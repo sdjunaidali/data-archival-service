@@ -11,41 +11,9 @@ services:
       - SECRET_KEY=mysecretkey
       - SOURCE_DATABASE_URL=postgresql://user:pass@source-db:5432/source_db
       - ARCHIVE_DATABASE_URL=postgresql://user:pass@archive-db:5432/archive_db
-      - CELERY_BROKER_URL=redis://redis:6379/0
     depends_on:
       - source-db
       - archive-db
-      - redis
-
-  worker:
-    build:
-      context: ../
-      dockerfile: docker/Dockerfile.worker
-    environment:
-      - SECRET_KEY=mysecretkey
-      - SOURCE_DATABASE_URL=postgresql://user:pass@source-db:5432/source_db
-      - ARCHIVE_DATABASE_URL=postgresql://user:pass@archive-db:5432/archive_db
-      - CELERY_BROKER_URL=redis://redis:6379/0
-    depends_on:
-      - source-db
-      - archive-db
-      - redis
-
-  celery-beat:
-    build:
-      context: ../
-      dockerfile: docker/Dockerfile.worker
-    command: celery -A app.core.scheduler.celery_app beat --loglevel=info
-    environment:
-      - SECRET_KEY=mysecretkey
-      - SOURCE_DATABASE_URL=postgresql://user:pass@source-db:5432/source_db
-      - ARCHIVE_DATABASE_URL=postgresql://user:pass@archive-db:5432/archive_db
-      - CELERY_BROKER_URL=redis://redis:6379/0
-    depends_on:
-      - worker
-      - source-db
-      - archive-db
-      - redis
 
   source-db:
     image: postgres:14
@@ -68,11 +36,6 @@ services:
       - "5434:5432"
     volumes:
       - archive_data:/var/lib/postgresql/data
-
-  redis:
-    image: redis:7
-    ports:
-      - "6379:6379"
 
 volumes:
   source_data:

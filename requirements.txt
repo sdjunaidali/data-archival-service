@@ -6,6 +6,5 @@ python-jose
 passlib[bcrypt]
 pydantic
 pydantic-settings
-celery[redis]
-redis
+apscheduler
 alembic
