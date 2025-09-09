@@ -10,5 +10,14 @@ COPY app /app/app
 COPY alembic.ini /app/alembic.ini
 COPY alembic /app/alembic
 
+# Copy entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+
+# Make sure the entrypoint script is executable
+RUN chmod +x /entrypoint.sh
+
+# Set the entrypoint to run the migrations and then the FastAPI app
+ENTRYPOINT ["/entrypoint.sh"]
+
 EXPOSE 80
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]

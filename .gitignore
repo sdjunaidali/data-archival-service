@@ -4,6 +4,7 @@ __pycache__/
 *.pyo
 *.pyd
 venv/
+.venv/
 .env
 
 # Logs & databases
@@ -16,7 +17,8 @@ migrations/
 
 # Alembic migrations cache
 alembic/versions/*.pyc
-alembic/
+alembic/__pycache__/
+alembic/versions/__pycache__/
 
 # VS Code settings
 .vscode/
